@@ -2,63 +2,77 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Simpan;
+use App\Models\Anggota;
 use Illuminate\Http\Request;
 
 class SimpananController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $simpans = Simpan::with('anggota')
+            ->latest()
+            ->paginate(10);
+
+        return view('simpanan.index', compact('simpans'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $anggotas = Anggota::all();
+
+        return view('simpanan.create', compact('anggotas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'anggota_id' => 'required|exists:anggotas,id',
+            'jenis' => 'required|in:pokok,wajib,sukarela',
+            'nominal' => 'required|numeric|min:1',
+            'tanggal_transaksi' => 'required|date',
+            'status' => 'required|in:pending,berhasil',
+        ]);
+
+        Simpan::create($validated);
+
+        return redirect()->route('simpanan.index')
+            ->with('success', 'Data simpanan berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Simpan $simpan)
     {
-        //
+        return view('simpanan.show', compact('simpan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Simpan $simpan)
     {
-        //
+        $anggotas = Anggota::all();
+
+        return view('simpanan.edit', compact('simpan', 'anggotas'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Simpan $simpan)
     {
-        //
+        $validated = $request->validate([
+            'anggota_id' => 'required|exists:anggotas,id',
+            'jenis' => 'required|in:pokok,wajib,sukarela',
+            'nominal' => 'required|numeric|min:1',
+            'tanggal_transaksi' => 'required|date',
+            'status' => 'required|in:pending,berhasil',
+        ]);
+
+        $simpan->update($validated);
+
+        return redirect()->route('simpanan.index')
+            ->with('success', 'Data simpanan berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Simpan $simpan)
     {
-        //
+        $simpan->delete();
+
+        return redirect()->route('simpanan.index')
+            ->with('success', 'Data simpanan berhasil dihapus.');
     }
 }

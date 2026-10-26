@@ -3,28 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Anggota extends Model
 {
-    protected $table = 'simpanan';
-
     protected $fillable = [
-        'anggota_id',
-        'jenis',
-        'nominal',
-        'tanggal_transaksi',
-        'status',
-        'created_by',
+        'nama',
+        'nis_nim',
+        'no_hp',
+        'alamat',
     ];
-
-    protected $casts = [
-        'tanggal_transaksi' => 'date',
-        'nominal' => 'decimal:2',
-    ];
-
-    public function anggota(): BelongsTo
-    {
-        return $this->belongsTo(Anggota::class);
-    }
 }
