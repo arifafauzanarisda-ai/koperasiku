@@ -2,63 +2,110 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Angsuran;
+use App\Models\Pinjaman;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AngsuranController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+    public function index(Request $request)
+{
+    $keyword = trim($request->input('keyword', ''));
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    $angsurans = Angsuran::with('pinjaman')
+        ->when($keyword !== '', function ($query) use ($keyword) {
+            $query->where('status', 'like', "%{$keyword}%")
+                ->orWhere('angsuran_ke', 'like', "%{$keyword}%");
+        })
+        ->latest('id')
+        ->paginate(10)
+        ->withQueryString();
+
+    return view('angsuran.index', compact('angsurans', 'keyword'));
+}
+
     public function create()
     {
-        //
+        $pinjamans = Pinjaman::with('anggota')->latest('id')->get();
+
+        return view('angsuran.create', compact('pinjamans'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'pinjaman_id' => ['required', 'exists:pinjamen,id'],
+            'angsuran_ke' => ['required', 'integer', 'min:1'],
+            'jumlah_angsuran' => ['required', 'numeric', 'gt:0'],
+            'denda' => ['nullable', 'numeric', 'min:0'],
+            'tanggal_jatuh_tempo' => ['required', 'date'],
+            'tanggal_bayar' => ['nullable', 'date'],
+            'status' => ['required', Rule::in(['belum_bayar', 'lunas'])],
+        ]);
+
+        $validated['denda'] = $validated['denda'] ?? 0;
+
+        if ($validated['status'] === 'belum_bayar') {
+            $validated['tanggal_bayar'] = null;
+        }
+
+        Angsuran::create($validated);
+
+        return redirect()->route('angsuran.index')
+            ->with('success', 'Data angsuran berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Angsuran $angsuran)
     {
-        //
+        $angsuran->load('pinjaman.anggota');
+
+        return view('angsuran.show', compact('angsuran'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Angsuran $angsuran)
     {
-        //
+        $pinjamans = Pinjaman::with('anggota')->latest('id')->get();
+
+        return view('angsuran.edit', compact('angsuran', 'pinjamans'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Angsuran $angsuran)
     {
-        //
+        $validated = $request->validate([
+            'pinjaman_id' => ['required', 'exists:pinjamen,id'],
+            'angsuran_ke' => [
+                'required',
+                'integer',
+                'min:1',
+                Rule::unique('angsurans', 'angsuran_ke')
+                    ->where('pinjaman_id', $request->pinjaman_id)
+                    ->ignore($angsuran->id),
+            ],
+            'jumlah_angsuran' => ['required', 'numeric', 'gt:0'],
+            'denda' => ['nullable', 'numeric', 'min:0'],
+            'tanggal_jatuh_tempo' => ['required', 'date'],
+            'tanggal_bayar' => ['nullable', 'date'],
+            'status' => ['required', Rule::in(['belum_bayar', 'lunas'])],
+        ]);
+
+        $validated['denda'] = $validated['denda'] ?? 0;
+
+        if ($validated['status'] === 'belum_bayar') {
+            $validated['tanggal_bayar'] = null;
+        }
+
+        $angsuran->update($validated);
+
+        return redirect()->route('angsuran.index')
+            ->with('success', 'Data angsuran berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Angsuran $angsuran)
     {
-        //
+        $angsuran->delete();
+
+        return redirect()->route('angsuran.index')
+            ->with('success', 'Data angsuran berhasil dihapus.');
     }
 }

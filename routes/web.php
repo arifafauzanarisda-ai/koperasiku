@@ -35,8 +35,9 @@ Route::middleware(['auth'])->group(function () {
         UserController::class);
 
     // Data anggota
-    Route::resource('anggota', AnggotaController::class);
-
+Route::resource('anggota', AnggotaController::class)
+    ->parameters(['anggota' => 'anggota']);
+    
     // Data simpanan
     Route::resource('simpanan', SimpananController::class);
 

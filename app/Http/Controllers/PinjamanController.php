@@ -2,63 +2,133 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anggota;
+use App\Models\Pinjaman;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class PinjamanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // Menampilkan daftar pinjaman
+    public function index(Request $request)
     {
-        //
+        $keyword = $request->input('keyword');
+
+        $query = Pinjaman::with('anggota');
+
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('status', 'like', '%' . $keyword . '%')
+                    ->orWhereHas('anggota', function ($anggota) use ($keyword) {
+                        $anggota->where('nama', 'like', '%' . $keyword . '%');
+                    });
+            });
+        }
+
+        $pinjamans = $query->latest('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('pinjaman.index', [
+            'pinjamans' => $pinjamans,
+            'keyword' => $keyword,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Form tambah pinjaman
     public function create()
     {
-        //
+        $anggotas = Anggota::orderBy('nama')->get();
+
+        return view('pinjaman.create', compact('anggotas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Menyimpan pinjaman baru
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'anggota_id' => ['required', 'integer', 'exists:anggota,id'],
+            'jumlah_pengajuan' => ['required', 'numeric', 'min:1'],
+            'jumlah_disetujui' => ['nullable', 'numeric', 'min:0'],
+            'bunga_persen' => ['required', 'numeric', 'min:0', 'max:100'],
+            'tenor_bulan' => ['required', 'integer', 'min:1', 'max:600'],
+            'status' => ['required', 'in:diajukan,disetujui,ditolak,berjalan,lunas'],
+        ]);
+
+        // Pengajuan baru belum memiliki jumlah yang disetujui.
+        $data['jumlah_disetujui'] = $data['jumlah_disetujui'] ?? 0;
+
+        // Simpan data pinjaman ke database.
+        Pinjaman::create($data);
+
+        return redirect()
+            ->route('pinjaman.index')
+            ->with('success', 'Data pinjaman berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+   
+    // Menampilkan detail pinjaman
+    public function show($id)
     {
-        //
+        $pinjaman = Pinjaman::with('anggota')->findOrFail($id);
+
+        return view('pinjaman.show', compact('pinjaman'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    // Menampilkan formulir edit pinjaman
+    
+public function edit($id)
+{
+    $pinjaman = Pinjaman::findOrFail($id);
+    $anggotas = Anggota::orderBy('nama')->get();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    return view('pinjaman.edit', compact('pinjaman', 'anggotas'));
+}
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+public function update(Request $request, $id)
+{
+    $pinjaman = Pinjaman::findOrFail($id);
+
+    $validated = $request->validate([
+        'anggota_id' => 'required|exists:anggota,id',
+        'jumlah_pengajuan' => 'required|numeric|min:1',
+        'jumlah_disetujui' => 'nullable|numeric|min:0',
+        'bunga_persen' => 'required|numeric|min:0|max:100',
+        'tenor_bulan' => 'required|integer|min:1|max:600',
+        'status' => 'required|in:diajukan,disetujui,ditolak,berjalan,lunas',
+    ]);
+
+    $validated['jumlah_disetujui'] =
+        $validated['jumlah_disetujui'] ?? 0;
+
+    $pinjaman->update($validated);
+
+    return redirect()
+        ->route('pinjaman.index')
+        ->with('success', 'Data pinjaman berhasil diperbarui.');
+}
+
+
+    // Menghapus pinjaman
+    
+public function destroy($id)
+{
+    $pinjaman = Pinjaman::findOrFail($id);
+
+    try {
+        $pinjaman->delete();
+
+        return redirect()
+            ->route('pinjaman.index')
+            ->with('success', 'Data pinjaman berhasil dihapus.');
+    } catch (\Illuminate\Database\QueryException $e) {
+        return redirect()
+            ->route('pinjaman.index')
+            ->with(
+                'error',
+                'Data pinjaman tidak dapat dihapus karena masih digunakan oleh data lain.'
+            );
     }
+}
+
 }
