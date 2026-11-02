@@ -3,6 +3,9 @@
 @section('title', 'Tambah Anggota')
 
 @section('content')
+
+@section('page-title', 'Tambah Anggota')
+
 <div class="container py-4">
 
     {{-- Header halaman --}}

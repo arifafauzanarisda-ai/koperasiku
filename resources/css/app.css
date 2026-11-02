@@ -2,34 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Form Tambah Anggota ===== */
+
+/* =========================================
+   1. PENGATURAN DASAR
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    color: #334155;
+}
+
+
+/* =========================================
+   2. HALAMAN ANGGOTA
+========================================= */
+
 .member-page {
-    max-width: 1100px;
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 28px 20px;
 }
 
-/* Lanjutkan dengan seluruh CSS formulir
-   yang sudah kamu kirim sebelumnya */
 
-
-/* ===== Form Tambah Anggota ===== */
-.member-page {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 28px 20px;
-}
+/* =========================================
+   3. JUDUL HALAMAN
+========================================= */
 
 .member-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
     gap: 16px;
     margin-bottom: 24px;
 }
 
 .member-heading h3 {
-    margin-bottom: 6px;
+    margin: 0 0 6px;
     color: #1e293b;
     font-size: 27px;
     font-weight: 700;
@@ -38,11 +52,18 @@
 .member-heading p {
     margin: 0;
     color: #64748b;
+    font-size: 14px;
 }
+
+
+/* =========================================
+   4. KARTU FORMULIR
+========================================= */
 
 .member-card {
     overflow: hidden;
-    background: #fff;
+    width: 100%;
+    background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 14px;
     box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
@@ -50,8 +71,8 @@
 
 .member-card-header {
     padding: 20px 24px;
-    border-bottom: 1px solid #e2e8f0;
     background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .member-card-header h5 {
@@ -65,43 +86,211 @@
     padding: 28px 24px;
 }
 
+
+/* =========================================
+   5. BAGIAN FORMULIR
+========================================= */
+
+.member-form {
+    width: 100%;
+    padding: 10px 4px;
+}
+
+.member-form-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.member-form-heading h3 {
+    margin: 0 0 6px;
+    color: #1e293b;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.member-form-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.required-note {
+    color: #64748b;
+    font-size: 13px;
+}
+
+
+/* =========================================
+   6. FORM GRID DUA KOLOM
+========================================= */
+
+.member-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 26px;
+}
+
+.member-field {
+    min-width: 0;
+}
+
+.member-field-full {
+    grid-column: 1 / -1;
+}
+
+
+/* =========================================
+   7. LABEL FORMULIR
+========================================= */
+
+.member-field label,
 .member-form .form-label {
-    margin-bottom: 8px;
+    display: block;
+    margin-bottom: 9px;
     color: #334155;
     font-size: 14px;
     font-weight: 600;
 }
 
+.member-field label span {
+    color: #ef4444;
+}
+
+
+/* =========================================
+   8. INPUT, SELECT DAN TEXTAREA
+========================================= */
+
+.member-field input,
+.member-field select,
+.member-field textarea,
 .member-form .form-control,
 .member-form .form-select {
-    min-height: 44px;
-    border: 1px solid #cbd5e1;
+    display: block;
+    width: 100%;
+    min-height: 45px;
+    padding: 12px 14px;
+    border: 1px solid #dbe2ea;
     border-radius: 8px;
+    background-color: #ffffff;
+    color: #334155;
+    font-family: inherit;
     font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.member-field textarea,
 .member-form textarea.form-control {
-    min-height: 110px;
+    min-height: 105px;
+    resize: vertical;
 }
 
+.member-field input::placeholder,
+.member-field textarea::placeholder {
+    color: #94a3b8;
+}
+
+
+/* =========================================
+   9. EFEK FOKUS INPUT
+========================================= */
+
+.member-field input:focus,
+.member-field select:focus,
+.member-field textarea:focus,
 .member-form .form-control:focus,
 .member-form .form-select:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    outline: none;
 }
 
-.member-form .text-danger {
+
+/* =========================================
+   10. VALIDASI FORMULIR
+========================================= */
+
+.member-field .is-invalid,
+.member-form .is-invalid {
+    border-color: #ef4444;
+}
+
+.member-field .is-invalid:focus,
+.member-form .is-invalid:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10);
+}
+
+.field-error {
+    display: block;
+    margin-top: 6px;
+    color: #dc2626;
+    font-size: 12px;
+}
+
+.member-form .invalid-feedback {
+    display: block;
     margin-top: 5px;
     font-size: 12px;
 }
 
+
+/* =========================================
+   11. TOMBOL FORMULIR
+========================================= */
+
+.member-form-actions,
 .member-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
     padding-top: 22px;
-    margin-top: 8px;
     border-top: 1px solid #e2e8f0;
+}
+
+.btn-member-cancel,
+.btn-member-save {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 43px;
+    padding: 0 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-member-cancel {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-member-cancel:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.btn-member-save {
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #2563eb;
+}
+
+.btn-member-save:hover {
+    background: #1d4ed8;
+    color: #ffffff;
 }
 
 .member-actions .btn {
@@ -111,7 +300,41 @@
     font-weight: 600;
 }
 
+
+/* =========================================
+   12. RESPONSIVE TABLET DAN HP
+========================================= */
+
+@media (max-width: 768px) {
+
+    .member-form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .member-field-full {
+        grid-column: auto;
+    }
+
+    .member-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn-member-cancel,
+    .btn-member-save {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+}
+
+
+/* =========================================
+   13. RESPONSIVE LAYAR KECIL
+========================================= */
+
 @media (max-width: 576px) {
+
     .member-page {
         padding: 20px 12px;
     }
@@ -128,8 +351,150 @@
         padding: 20px 16px;
     }
 
+    .member-card-header {
+        padding: 16px;
+    }
+
+    .member-form-heading h3 {
+        font-size: 18px;
+    }
+
+    .member-form-actions,
+    .member-actions {
+        gap: 10px;
+    }
+
     .member-actions .btn {
         min-width: 0;
         flex: 1;
     }
+
+}
+
+
+/* =====================================
+   FORM SIMPANAN
+===================================== */
+
+.member-page .member-form {
+    width: 100%;
+}
+
+.member-page .member-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 26px;
+}
+
+.member-page .member-field {
+    min-width: 0;
+}
+
+.member-page .member-field-full {
+    grid-column: 1 / -1;
+}
+
+.member-page .member-field label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.member-page .member-field label span {
+    color: #ef4444;
+}
+
+.member-page .member-field input,
+.member-page .member-field select,
+.member-page .member-field textarea {
+    display: block;
+    width: 100%;
+    min-height: 45px;
+    padding: 12px 14px;
+    border: 1px solid #dbe2ea;
+    border-radius: 8px;
+    background: #fff;
+    color: #334155;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.member-page .member-field textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.member-page .member-field input:focus,
+.member-page .member-field select:focus,
+.member-page .member-field textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+}
+
+.member-page .member-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.member-page .btn-member-save:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .member-page .member-form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .member-page .member-field-full {
+        grid-column: auto;
+    }
+
+    .member-page .member-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .member-page .member-form-actions a,
+    .member-page .member-form-actions button {
+        width: 100%;
+    }
+}
+
+.card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.card-actions a {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 130px;
+    padding: 10px 16px !important;
+    margin: 0 !important;
+    color: #ffffff !important;
+    background: #2563eb !important;
+    border: 1px solid #2563eb;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.card-actions a:hover {
+    background: #1d4ed8 !important;
+    border-color: #1d4ed8;
 }

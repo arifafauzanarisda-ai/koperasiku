@@ -1,64 +1,46 @@
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tambah Simpanan</title>
-</head>
-<body>
-    <h1>Halaman Tambah Simpanan</h1>
-    <p>Jika tulisan ini muncul, file Blade berhasil ditampilkan.</p>
+@section('title', 'Tambah Simpanan')
+@section('page-title', 'Tambah Simpanan')
 
-    <form action="{{ route('simpanan.store') }}" method="POST">
-        @csrf
+@section('content')
 
-        <label>Anggota</label>
-        <select name="anggota_id" required>
-            <option value="">-- Pilih Anggota --</option>
-            @foreach ($anggotas as $anggota)
-                <option value="{{ $anggota->id }}">
-                    {{ $anggota->no_anggota }} - {{ $anggota->nama }}
-                </option>
-            @endforeach
-        </select>
+<div class="member-page">
 
-        <br><br>
+    <div class="member-heading">
+        <div>
+            <h3>Tambah Simpanan</h3>
+            <p>Masukkan data transaksi simpanan anggota koperasi.</p>
+        </div>
 
-        <label>Nomor Transaksi</label>
-        <input type="text" name="no_transaksi" required>
+        <a href="{{ route('simpanan.index') }}" class="btn-member-cancel">
+            ← Kembali
+        </a>
+    </div>
 
-        <br><br>
+    <div class="member-card">
 
-        <label>Jenis Simpanan</label>
-        <select name="jenis_simpanan" required>
-            <option value="pokok">Pokok</option>
-            <option value="wajib">Wajib</option>
-            <option value="sukarela">Sukarela</option>
-        </select>
+        <div class="member-card-header">
+            <h5>Formulir Simpanan</h5>
+        </div>
 
-        <br><br>
+        <div class="member-card-body">
 
-        <label>Jumlah</label>
-        <input type="number" name="jumlah" min="0.01"
-               step="0.01" required>
+            <form action="{{ route('simpanan.store') }}"
+                  method="POST"
+                  id="formSimpanan">
 
-        <br><br>
+                @csrf
 
-        <label>Tanggal</label>
-        <input type="date" name="tanggal"
-               value="{{ now()->format('Y-m-d') }}"
-               max="{{ now()->format('Y-m-d') }}" required>
+                @include('simpanan.form')
 
-        <br><br>
+            </form>
 
-        <label>Keterangan</label>
-        <textarea name="keterangan"></textarea>
+        </div>
+    </div>
 
-        <br><br>
+    <p class="required-note">* Wajib diisi.</p>
 
-        <button type="submit">Simpan</button>
-        <a href="{{ route('simpanan.index') }}">Kembali</a>
-    </form>
-</body>
-</html>
+</div>
+
+@endsection

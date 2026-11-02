@@ -10,15 +10,19 @@ class Pinjaman extends Model
 {
     protected $table = 'pinjaman';
 
-    protected $fillable = [
-        'anggota_id',
-        'jumlah_pengajuan',
-        'jumlah_disetujui',
-        'bunga_persen',
-        'tenor_bulan',
-        'status',
-        'approved_by',
-    ];
+   protected $fillable = [
+    'anggota_id',
+    'jumlah_pengajuan',
+    'jumlah_disetujui',
+    'bunga_persen',
+    'tenor_bulan',
+    'status',
+    'approved_by',
+    'jumlah_pencairan',
+    'tanggal_pencairan',
+    'disbursed_by',
+    'tanggal_pelunasan',
+];
 
     public function anggota(): BelongsTo
     {
